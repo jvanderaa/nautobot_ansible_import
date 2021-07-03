@@ -1,6 +1,6 @@
 # Ansible Nautobot Demo
 
-![](https://github.com/jvanderaa/nautobot-ansible-import/workflows/CI/badge.svg)
+[![CI](https://github.com/jvanderaa/nautobot_ansible_import/actions/workflows/main.yml/badge.svg)](https://github.com/jvanderaa/nautobot_ansible_import/actions/workflows/main.yml)
 
 ## Nautobot
 
