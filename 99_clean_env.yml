@@ -4,18 +4,18 @@
   hosts: platforms_nxos, platforms_ios, platforms_eos
   tags: [ ios, nxos ]
   tasks:
-    - name: "TASK 1: NETBOX >> REMOVE DEVICE TO NETBOX"
+    - name: "TASK 1: NAUTOBOT >> REMOVE DEVICE TO NAUTOBOT"
       networktocode.nautobot.device:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           name: "{{ inventory_hostname }}"
         state: absent
 
-    - name: "TASK 2: DELETE SW1:2 DEVICE TO NETBOX"
+    - name: "TASK 2: DELETE SW1:2 DEVICE TO NAUTOBOT"
       networktocode.nautobot.device:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           name: "sw-1:2"
           device_type: "IOSv"
@@ -44,14 +44,14 @@
       - { name: pve02, address: "192.168.0.253/24" }
     nautobot_headers:
       Content-Type: "application/json"
-      Authorization: "token {{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
-    url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-    token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+      Authorization: "token {{ lookup('env', 'NAUTOBOT_TOKEN') }}"
+    url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+    token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
   tasks:
     - name: "TASK 1: SYS >> DELETE SOME VMs"
       networktocode.nautobot.virtual_machine:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           name: "{{ item.name }}"
           cluster: JoshV_Cluster1
@@ -60,8 +60,8 @@
 
     - name: "TASK 2: SYS >> DELETE CLUSTER HOSTS"
       networktocode.nautobot.device:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           name: "{{ item.name }}"
           device_type: CustomServer
@@ -72,8 +72,8 @@
 
     - name: "TASK 3: SYS >> DELETE VM CLUSTER"
       networktocode.nautobot.cluster:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           name: JoshV_Cluster1
           cluster_type: Proxmox
@@ -81,13 +81,13 @@
 
     - name: "TASK 4: DELETE CLUSTER TYPE"
       networktocode.nautobot.cluster_type:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           name: Proxmox
         state: absent
 
-- name: "PLAY 3: CLEANUP BASE NETBOX"
+- name: "PLAY 3: CLEANUP BASE NAUTOBOT"
   hosts: localhost
   connection: local
   vars:
@@ -95,16 +95,16 @@
   tasks:
     - name: "TASK 1: DELETE LOCAL CIRCUIT"
       networktocode.nautobot.circuit:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           cid: my-circuit-id
         state: "{{ install_state }}"
 
     - name: "TASK 2: DELETE CIRCUIT TYPE"
       networktocode.nautobot.circuit_type:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           name: Cable
         state: "{{ install_state }}"
@@ -112,8 +112,8 @@
 
     - name: "TASK 3: DELETE CIRCUIT PROVIDER"
       networktocode.nautobot.provider:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           name: Charter Spectrum
           asn: 7843
@@ -126,8 +126,8 @@
 
     - name: "TASK 4: DELETE PREFIXES"
       networktocode.nautobot.prefix:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           family: 4
           prefix: "{{ item.prefix }}"
@@ -146,8 +146,8 @@
 
     - name: "TASK 5: DELETE AGGREGRATES"
       networktocode.nautobot.aggregate:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           prefix: "{{ item.name }}"
           description: "{{ item.desc }}"
@@ -162,8 +162,8 @@
 
     - name: "TASK 6: DELETE RFC1918 RIR"
       networktocode.nautobot.rir:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           name: RFC1918
           is_private: True
@@ -172,8 +172,8 @@
 
     - name: "TASK 7: DELETE VLANS"
       networktocode.nautobot.vlan:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           name: "VLAN{{ item.vid }}"
           vid: "{{ item.vid }}"
@@ -189,8 +189,8 @@
 
     - name: "TASK 8: DELETE DEVICE ROLES"
       networktocode.nautobot.device_role:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           name: "{{ item.name }}"
           color: "{{ item.color }}"
@@ -208,8 +208,8 @@
 
     - name: "TASK 9: DELETE PLATFORMS"
       networktocode.nautobot.platform:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           name: "{{ item.name }}"
           slug: "{{ item.slug }}"
@@ -230,8 +230,8 @@
 
     - name: "TASK 10: DELETE DEVICE TYPES"
       networktocode.nautobot.device_type:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           model: "{{ item.model }}"
           manufacturer: "{{ item.manufacturer }}"
@@ -252,8 +252,8 @@
 
     - name: "TASK 11: DELETE MANUFACTURERS"
       networktocode.nautobot.manufacturer:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           name: "{{ item }}"
         state: "{{ install_state }}"
@@ -266,8 +266,8 @@
 
     - name: "TASK 12: DELETE RACKS"
       networktocode.nautobot.rack:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           name: "MN_01"
           site: "MINNESOTA01"
@@ -276,8 +276,8 @@
 
     - name: "TASK 13: DELETE SITES"
       networktocode.nautobot.site:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           name: "MINNESOTA01"
           time_zone: America/Chicago

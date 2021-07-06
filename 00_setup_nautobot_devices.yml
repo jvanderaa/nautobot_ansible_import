@@ -1,5 +1,5 @@
 ---
-- name: "PLAY 1: SETUP DEVICES WITHIN NETBOX"
+- name: "PLAY 1: SETUP DEVICES WITHIN NAUTOBOT"
   hosts: localhost
   connection: local
   vars:
@@ -7,10 +7,10 @@
   tasks:
     - name: "TASK 1: SETUP SITES"
       networktocode.nautobot.site:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data: "{{ site }}"
-        state: "{{ install_state }}"
+        validate_certs: False
       register: site_setup
       loop: "{{ sites }}"
       loop_control:
@@ -20,10 +20,11 @@
 
     - name: "TASK 2: SETUP RACKS"
       networktocode.nautobot.rack:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data: "{{ rack }}"
         state: "{{ install_state }}"
+        validate_certs: False
       loop: "{{ racks }}"
       loop_control:
         loop_var: rack
@@ -32,11 +33,12 @@
 
     - name: "TASK 3: SETUP MANUFACTURERS"
       networktocode.nautobot.manufacturer:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           name: "{{ manufacturer }}"
         state: "{{ install_state }}"
+        validate_certs: False
       loop: "{{ manufacturers }}"
       loop_control:
         loop_var: manufacturer
@@ -44,8 +46,8 @@
 
     - name: "TASK 4: SETUP DEVICE TYPES"
       networktocode.nautobot.device_type:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           model: "{{ device_type.model }}"
           manufacturer: "{{ device_type.manufacturer }}"
@@ -54,6 +56,7 @@
           u_height: 1
           is_full_depth: "{{ device_type.full_depth }}"
         state: "{{ install_state }}"
+        validate_certs: False
       loop: "{{ device_types }}"
       loop_control:
         loop_var: device_type
@@ -62,12 +65,13 @@
 
     - name: "TASK 5: SETUP PLATFORMS"
       networktocode.nautobot.platform:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           name: "{{ platform.name }}"
           slug: "{{ platform.slug }}"
         state: "{{ install_state }}"
+        validate_certs: False
       loop: "{{ platforms }}"
       loop_control:
         loop_var: platform
@@ -76,13 +80,14 @@
 
     - name: "TASK 6: SETUP DEVICE ROLES"
       networktocode.nautobot.device_role:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           name: "{{ device_role.name }}"
           color: "{{ device_role.color }}"
           vm_role: "{{ device_role.vmrole }}"
         state: "{{ install_state }}"
+        validate_certs: False
       loop: "{{ device_roles }}"
       loop_control:
         loop_var: device_role
@@ -91,14 +96,16 @@
 
     - name: "TASK 7: SETUP VLANS"
       networktocode.nautobot.vlan:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           name: "VLAN{{ vlan.vid }}"
           vid: "{{ vlan.vid }}"
           site: "MINNESOTA01"
           description: "{{ vlan.desc }}"
+          status: "Active"
         state: "{{ install_state }}"
+        validate_certs: False
       register: result
       loop: "{{ vlans }}"
       loop_control:
@@ -108,10 +115,11 @@
 
     - name: "TASK 8: SETUP RFC1918 RIR"
       networktocode.nautobot.rir:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data: "{{ rir }}"
         state: "{{ install_state }}"
+        validate_certs: False
       loop: "{{ rirs }}"
       loop_control:
         loop_var: rir
@@ -120,13 +128,14 @@
 
     - name: "TASK 8: SETUP AGGREGRATES"
       networktocode.nautobot.aggregate:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           prefix: "{{ aggregate.name }}"
           description: "{{ aggregate.desc }}"
           rir: "{{ aggregate.rir }}"
         state: "{{ install_state }}"
+        validate_certs: False
       loop: "{{ aggregates }}"
       loop_control:
         loop_var: aggregate
@@ -135,8 +144,8 @@
 
     - name: "TASK 9: SETUP PREFIXES"
       networktocode.nautobot.prefix:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           family: 4
           prefix: "{{ prefix.prefix }}"
@@ -145,6 +154,7 @@
           description: "{{ prefix.desc }}"
           is_pool: "{{ prefix.ispool }}"
         state: "{{ install_state }}"
+        validate_certs: False
       loop: "{{ prefixes }}"
       loop_control:
         loop_var: prefix
@@ -153,22 +163,24 @@
 
     - name: "TASK 10: SETUP CIRCUIT PROVIDER"
       networktocode.nautobot.provider:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data: "{{ circuit_provider }}"
         state: "{{ install_state }}"
+        validate_certs: False
       loop: "{{ circuit_providers }}"
       loop_control:
         loop_var: circuit_provider
         label: "{{ circuit_provider['name'] }}"
       tags: [ circuit ]
 
-    - name: Create type within Netbox with only required information
+    - name: Create type within Nautobot with only required information
       networktocode.nautobot.circuit_type:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data: "{{ circuit_type }}"
         state: "{{ install_state }}"
+        validate_certs: False
       loop: "{{ circuit_types }}"
       loop_control:
         loop_var: circuit_type
@@ -177,10 +189,11 @@
 
     - name: "CREATE LOCAL CIRCUIT"
       networktocode.nautobot.circuit:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data: "{{ circuit }}"
         state: "{{ install_state }}"
+        validate_certs: False
       loop: "{{ circuits }}"
       loop_control:
         loop_var: circuit

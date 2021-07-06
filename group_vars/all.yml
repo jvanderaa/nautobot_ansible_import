@@ -8,13 +8,14 @@ dns_servers:
 sites:
   - name: "MINNESOTA01"
     time_zone: America/Chicago
-    status: active
+    status: "Active"
     description: Dev
     contact_name: Josh
     contact_email: josh@josh-v.com
 racks:
   - name: "MN_01"
     site: "MINNESOTA01"
+    status: "Active"
 manufacturers:
   - Arista
   - Cisco
@@ -23,6 +24,7 @@ manufacturers:
 device_types:
   - {"model": "ASAv", "manufacturer": "Cisco", "slug": "asav", "part_number": "asav", "full_depth": False}
   - {"model": "CSR1000v", "manufacturer": "Cisco", "slug": "csr1000v", "part_number": "csr1000v", "full_depth": False}
+  - {"model": "WS-C3750G-48PS", "manufacturer": "Cisco", "slug": "ws-c3750g-48ps", "part_number": "WS-C3750G-48PS", "full_depth": False}
   - {"model": "CustomServer", "manufacturer": "CustomBuild", "slug": "customserver", "part_number": "home", "full_depth": True}
   - {"model": "IOSv", "manufacturer": "Cisco", "slug": "iosv", "part_number": "iosv", "full_depth": False}
   - {"model": "nx-osv-chassis-nx-osv-supervisor-module", "manufacturer": "Cisco", "slug": "nx-osv-chassis-nx-osv-supervisor-module", "part_number": "nx-osv-chassis-nx-osv-supervisor-module", "full_depth": False}
@@ -49,9 +51,9 @@ device_roles:
   - { name: Switch, color: 008000, vmrole: true }
   - { name: VM, color: 00FFFF, vmrole: true }
 vlans:
-  - { vid: 100, desc: Demo VLAN }
-  - { vid: 200, desc: Primary VLAN }
-  - { vid: 300, desc: Secondary VLAN }
+  - { vid: 100, desc: Demo VLAN, status: Active }
+  - { vid: 200, desc: Primary VLAN, status: Active }
+  - { vid: 300, desc: Secondary VLAN, status: Active }
 rirs:
   - name: RFC1918
     is_private: True

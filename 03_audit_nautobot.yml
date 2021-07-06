@@ -1,18 +1,19 @@
 ---
 # Playbook to read information from device and Nautobot and compare
-- name: "PLAY 1: READ NETWORK DEVICE INFORMATION AND COMPARE NETBOX"
+- name: "PLAY 1: READ NETWORK DEVICE INFORMATION AND COMPARE NAUTOBOT"
   hosts: platforms_ios, platforms_eos, platforms_nxos
   become: yes
   become_method: enable
-  connection: network_cli
+  connection: ansible.netcommon.network_cli
   vars:
-    url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-    token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+    url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+    token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
     nautobot_headers:
       Content-Type: "application/json"
       Authorization: "token {{ token }}"
     nautobot_serial_list: []
     device_serial_list: []
+    ssl_verify: True
   tasks:
     - name: "TASK 1A: NXOS >> GET NXOS FACTS"
       nxos_facts:
@@ -29,15 +30,16 @@
         gather_subset: "!config"
       when: "ansible_network_os == 'eos'"
 
-    - name: "TASK 2: NETBOX >> GATHER NETBOX DATA"
+    - name: "TASK 2: NAUTOBOT >> GATHER NAUTOBOT DATA"
       uri:
         url: "{{ url }}/api/dcim/devices/?q={{ inventory_hostname }}"
         headers: "{{ nautobot_headers }}"
         method: GET
         status_code: 200
+        validate_certs: "{{ ssl_verify }}"
       register: nautobot_device_results
 
-    - name: "TASK 3: SYS >> BUILD NETBOX SERIAL NUMBER LIST FROM NETBOX RESPONSES"
+    - name: "TASK 3: SYS >> BUILD NAUTOBOT SERIAL NUMBER LIST FROM NAUTOBOT RESPONSES"
       set_fact:
         nautobot_serial_list: "{{ nautobot_serial_list + [ item.serial ] }}"
       loop: "{{ nautobot_device_results['json']['results'] }}"
@@ -48,7 +50,7 @@
       set_fact:
         device_serial_list: "{{ ansible_facts | get_ciscoios_serial_list }}"
 
-    - name: "TASK 5: SYS >> VERIFY DEVICE DATA VS NETBOX - CUSTOM FILTER"
+    - name: "TASK 5: SYS >> VERIFY DEVICE DATA VS NAUTOBOT - CUSTOM FILTER"
       assert:
         that:
           - "device_serial_list | compare_lists(nautobot_serial_list)"
