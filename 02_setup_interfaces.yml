@@ -2,6 +2,8 @@
 - name: "PLAY 1: ADD INTERFACES TO NAUTOBOT AND CLEANUP TEMP"
   connection: ansible.netcommon.network_cli
   hosts: platforms_nxos, platforms_ios, platforms_eos
+  vars:
+    ssl_verify: True
   tags: [ ios, nxos ]
   tasks:
     - name: "TASK 1A: NXOS >> GET NXOS FACTS"
@@ -29,7 +31,7 @@
           type: "{{ item.key | get_interface_type }}"
           mac_address: "{{ item.value.macaddress | convert_mac_address }}"
         state: present
-        validate_certs: False
+        validate_certs: "{{ ssl_verify }}"
       with_dict:
         - "{{ ansible_facts['net_interfaces'] }}"
       loop_control:
@@ -46,7 +48,7 @@
           assigned_object:
             name: "{{ item['interface'] }}"
             device: "{{ inventory_hostname }}"
-        validate_certs: False
+        validate_certs: "{{ ssl_verify }}"
       with_items:
         - "{{ ansible_facts | build_ipv4_from_facts }}"
 
@@ -58,14 +60,14 @@
           device: "{{ inventory_hostname }}"
           name: Temporary_Interface
           type: Virtual
-        validate_certs: False
+        validate_certs: "{{ ssl_verify }}"
         state: absent
 
     - name: "TASK 5: NAUTOBOT >> SET PRIMARY IP"
       networktocode.nautobot.device:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
-        validate_certs: False
+        validate_certs: "{{ ssl_verify }}"
         data:
           name: "{{ inventory_hostname }}"
           device_type: "{{ ansible_facts['net_model'] }}"
