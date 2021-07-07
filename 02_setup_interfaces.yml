@@ -1,7 +1,9 @@
 ---
-- name: "PLAY 1: ADD INTERFACES TO NETBOX AND CLEANUP TEMP"
-  connection: network_cli
+- name: "PLAY 1: ADD INTERFACES TO NAUTOBOT AND CLEANUP TEMP"
+  connection: ansible.netcommon.network_cli
   hosts: platforms_nxos, platforms_ios, platforms_eos
+  vars:
+    ssl_verify: True
   tags: [ ios, nxos ]
   tasks:
     - name: "TASK 1A: NXOS >> GET NXOS FACTS"
@@ -19,49 +21,53 @@
         gather_subset: "!config"
       when: "ansible_network_os == 'eos'"
 
-    - name: "TASK 2: NETBOX >> ADD INTERFACES TO NETBOX"
+    - name: "TASK 2: NAUTOBOT >> ADD INTERFACES TO NAUTOBOT"
       networktocode.nautobot.device_interface:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           device: "{{ inventory_hostname }}"
           name: "{{ item.key }}"
-          form_factor: "{{ item.key | get_interface_type }}"
+          type: "{{ item.key | get_interface_type }}"
           mac_address: "{{ item.value.macaddress | convert_mac_address }}"
         state: present
+        validate_certs: "{{ ssl_verify }}"
       with_dict:
         - "{{ ansible_facts['net_interfaces'] }}"
       loop_control:
         label: "{{ item.key }}"
 
-    - name: "TASK 3: NETBOX >> ADD IP ADDRESSES TO PROPER INTERFACE"
+    - name: "TASK 3: NAUTOBOT >> ADD IP ADDRESSES TO PROPER INTERFACE"
       networktocode.nautobot.ip_address:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           family: 4
           address: "{{ item['address'] }}"
           status: active
-          interface:
+          assigned_object:
             name: "{{ item['interface'] }}"
             device: "{{ inventory_hostname }}"
+        validate_certs: "{{ ssl_verify }}"
       with_items:
         - "{{ ansible_facts | build_ipv4_from_facts }}"
 
-    - name: "TASK 4: NETBOX >> REMOVE TEMPORARY INTERFACE"
+    - name: "TASK 4: NAUTOBOT >> REMOVE TEMPORARY INTERFACE"
       networktocode.nautobot.device_interface:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         data:
           device: "{{ inventory_hostname }}"
           name: Temporary_Interface
-          form_factor: Virtual
+          type: Virtual
+        validate_certs: "{{ ssl_verify }}"
         state: absent
 
-    - name: "TASK 5: NETBOX >> SET PRIMARY IP"
+    - name: "TASK 5: NAUTOBOT >> SET PRIMARY IP"
       networktocode.nautobot.device:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
+        validate_certs: "{{ ssl_verify }}"
         data:
           name: "{{ inventory_hostname }}"
           device_type: "{{ ansible_facts['net_model'] }}"
@@ -69,6 +75,7 @@
           rack: MN_01
           device_role: "{{ inventory_hostname | get_role_from_hostname }}"
           primary_ip4: "{{ item['address'] }}"
+          status: "Active"
       with_items:
         - "{{ ansible_facts | build_ipv4_from_facts }}"
       when: "ansible_host == item['address'].split('/')[0]"

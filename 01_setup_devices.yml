@@ -3,15 +3,18 @@
 - name: "PLAY 1: SETUP vEOS"
   connection: network_cli
   hosts: eos
+  vars:
+    ssl_verify: True
   tasks:
     - name: "TASK 1: EOS >> GATHER FACTS FROM DEVICE"
       eos_facts:
         gather_subset: "!config"
 
-    - name: "TASK 2: NETBOX >> ADD DEVICE TO NETBOX"
+    - name: "TASK 2: NAUTOBOT >> ADD DEVICE TO NAUTOBOT"
       networktocode.nautobot.device:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
+        validate_certs: "{{ ssl_verify }}"
         data:
           name: "{{ inventory_hostname }}"
           device_type: "{{ ansible_facts['net_model'] }}"
@@ -26,32 +29,35 @@
           custom_fields:
             code_version: "{{ ansible_facts['net_version'] }}"
 
-    - name: "TASK 3: NETBOX >> Add temporary interface"
+    - name: "TASK 3: NAUTOBOT >> Add temporary interface"
       networktocode.nautobot.device_interface:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
+        validate_certs: "{{ ssl_verify }}"
         data:
           device: "{{ inventory_hostname }}"
           name: Temporary_Interface
-          form_factor: Virtual
+          type: Virtual
         state: present
 
-    - name: "TASK 4: NETBOX >> ADD IP ADDRESS OF ANSIBLE HOST"
+    - name: "TASK 4: NAUTOBOT >> ADD IP ADDRESS OF ANSIBLE HOST"
       networktocode.nautobot.ip_address:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
+        validate_certs: "{{ ssl_verify }}"
         data:
           family: 4
           address: "{{ ansible_host }}/24"
           status: active
-          interface:
+          assigned_object:
             name: Temporary_Interface
             device: "{{ inventory_hostname }}"
 
-    - name: "TASK 5: NETBOX >> ADD DEVICE TO NETBOX"
+    - name: "TASK 5: NAUTOBOT >> ADD DEVICE TO NAUTOBOT"
       networktocode.nautobot.device:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
+        validate_certs: "{{ ssl_verify }}"
         data:
           name: "{{ inventory_hostname }}"
           device_type: "{{ ansible_facts['net_model'] }}"
@@ -66,15 +72,18 @@
 - name: "PLAY 2: ADD IOS"
   connection: network_cli
   hosts: routers, switches
+  vars:
+    ssl_verify: True
   tasks:
     - name: "TASK 1: IOS >> GATHER FACTS FROM DEVICE"
       ios_facts:
         gather_subset: "!config"
 
-    - name: "TASK 2: NETBOX >> ADD DEVICE TO NETBOX"
+    - name: "TASK 2: NAUTOBOT >> ADD DEVICE TO NAUTOBOT"
       networktocode.nautobot.device:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
+        validate_certs: "{{ ssl_verify }}"
         data:
           name: "{{ inventory_hostname }}"
           device_type: "{{ ansible_facts['net_model'] }}"
@@ -85,35 +94,39 @@
           status: Active
           device_role: "{{ inventory_hostname | get_role_from_hostname }}"
           site: "MINNESOTA01"
-          custom_fields:
-            code_version: "{{ ansible_facts['net_version'] }}"
+          # custom_fields:
+          #   code_version: "{{ ansible_facts['net_version'] }}"
 
     - name: "TASK 3: Add temporary interface"
       networktocode.nautobot.device_interface:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
+        validate_certs: "{{ ssl_verify }}"
         data:
           device: "{{ inventory_hostname }}"
           name: Temporary_Interface
-          form_factor: Virtual
+          type: Virtual
         state: present
+
+    # TODO: Add a module to lookup inventory hostname if using only hostnames
 
     - name: "TASK 4: ADD IP ADDRESS OF ANSIBLE HOST"
       networktocode.nautobot.ip_address:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
+        validate_certs: "{{ ssl_verify }}"
         data:
-          family: 4
           address: "{{ ansible_host }}/24"
           status: active
-          interface:
+          assigned_object:
             name: Temporary_Interface
             device: "{{ inventory_hostname }}"
 
-    - name: "TASK 5: ADD DEVICE TO NETBOX"
+    - name: "TASK 5: ADD DEVICE TO NAUTOBOT"
       networktocode.nautobot.device:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
+        validate_certs: "{{ ssl_verify }}"
         data:
           name: "{{ inventory_hostname }}"
           device_type: "{{ ansible_facts['net_model'] }}"
@@ -130,15 +143,18 @@
   connection: network_cli
   hosts: nxos
   tags: [ nxos ]
+  vars:
+    ssl_verify: True
   tasks:
     - name: "TASK 1: NXOS >> GATHER FACTS FROM DEVICE"
       nxos_facts:
         gather_subset: "!config"
 
-    - name: "TASK 2: ADD DEVICE TO NETBOX"
+    - name: "TASK 2: ADD DEVICE TO NAUTOBOT"
       networktocode.nautobot.device:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
+        validate_certs: "{{ ssl_verify }}"
         data:
           name: "{{ inventory_hostname }}"
           device_type: "{{ ansible_facts['net_model'] }}"
@@ -154,30 +170,33 @@
 
     - name: "TASK 3: Add temporary interface"
       networktocode.nautobot.device_interface:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
+        validate_certs: "{{ ssl_verify }}"
         data:
           device: "{{ inventory_hostname }}"
           name: Temporary_Interface
-          form_factor: Virtual
+          type: Virtual
         state: present
 
     - name: "TASK 4: ADD IP ADDRESS OF ANSIBLE HOST"
       networktocode.nautobot.ip_address:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
+        validate_certs: "{{ ssl_verify }}"
         data:
           family: 4
           address: "{{ ansible_host }}/24"
           status: active
-          interface:
+          assigned_object:
             name: Temporary_Interface
             device: "{{ inventory_hostname }}"
 
-    - name: "TASK 5: ADD DEVICE TO NETBOX"
+    - name: "TASK 5: ADD DEVICE TO NAUTOBOT"
       networktocode.nautobot.device:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
+        validate_certs: "{{ ssl_verify }}"
         data:
           name: "{{ inventory_hostname }}"
           device_type: "{{ ansible_facts['net_model'] }}"
@@ -194,12 +213,15 @@
   connection: local
   hosts: localhost
   tags: [ setup_demo ]
+  vars:
+    ssl_verify: True
   tasks:
 
-    - name: "TASK 1: ADD DEVICE TO NETBOX"
+    - name: "TASK 1: ADD DEVICE TO NAUTOBOT"
       networktocode.nautobot.device:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
+        url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
+        token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
+        validate_certs: "{{ ssl_verify }}"
         data:
           name: "sw-1:2"
           device_type: "IOSv"
@@ -209,95 +231,3 @@
           status: Active
           device_role: "Switch"
           site: "MINNESOTA01"
-
-- name: "PLAY 5: SETUP CLUSTER"
-  connection: local
-  hosts: localhost
-  vars:
-    vms:
-      - { name: gns3, address: 192.168.0.101/24 }
-      - { name: awx, address: 192.168.0.102/24 }
-      - { name: prometheus, address: 192.168.0.104/24 }
-      - { name: docker01, address: 192.168.0.105/24 }
-      - { name: docker02, address: 192.168.0.106/24 }
-    pves:
-      - { name: pve01, address: "192.168.0.254/24" }
-      - { name: pve02, address: "192.168.0.253/24" }
-    nautobot_headers:
-      Content-Type: "application/json"
-      Authorization: "token {{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
-    url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-    token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
-  tasks:
-    - name: "TASK 0: CREATE CLUSTER TYPE"
-      networktocode.nautobot.cluster_type:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
-        data:
-          name: Proxmox
-        state: present
-
-    - name: "TASK 1: SYS >> ADD VM CLUSTER"
-      networktocode.nautobot.cluster:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
-        data:
-          name: JoshV_Cluster1
-          cluster_type: Proxmox
-        state: present
-
-    - name: "TASK 2: SYS >> CREATE CLUSTER HOSTS"
-      networktocode.nautobot.device:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
-        data:
-          name: "{{ item.name }}"
-          device_type: CustomServer
-          device_role: Server
-          site: minnesota01
-      loop: "{{ pves }}"
-
-    - name: "TASK 3: SYS >> SETUP SOME VMs"
-      networktocode.nautobot.virtual_machine:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
-        data:
-          name: "{{ item.name }}"
-          cluster: JoshV_Cluster1
-        state: present
-      loop: "{{ vms }}"
-
-    - name: "TASK 4: SYS >> Create interfaces"
-      networktocode.nautobot.vm_interface:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
-        data:
-          virtual_machine: "{{ item.name }}"
-          name: eth0
-        state: present
-      loop: "{{ vms }}"
-
-    - name: "TASK 5: SYS >> ASSIGN IP TO VM"
-      uri:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}/api/ipam/ip-addresses/"
-        method: POST
-        headers: "{{ nautobot_headers }}"
-        status_code: 201
-        body_format: json
-        body: {
-          "address": "{{ item.address }}",
-          "status": 1,
-          "interface": "{{ item.name | get_interface_id(url, nautobot_headers) }}"
-        }
-      loop: "{{ vms }}"
-
-    - name: "TASK 6: SYS >> ASSIGN PRIMARY ADDRESS TO THE DEVICE"
-      networktocode.nautobot.virtual_machine:
-        url: "{{ lookup('ENV', 'NAUTOBOT_URL') }}"
-        token: "{{ lookup('ENV', 'NAUTOBOT_TOKEN') }}"
-        data:
-          name: "{{ item.name }}"
-          cluster: JoshV_Cluster1
-          primary_ip4: "{{ item.address }}"
-        state: present
-      loop: "{{ vms }}"

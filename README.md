@@ -2,6 +2,10 @@
 
 [![CI](https://github.com/jvanderaa/nautobot_ansible_import/actions/workflows/main.yml/badge.svg)](https://github.com/jvanderaa/nautobot_ansible_import/actions/workflows/main.yml)
 
+## Network Importer
+
+This is only a start of the full importing process. It handles information based on the facts that is gathered by Ansible only. For a more full featured Network Importer experience, take a look at the Python/Batfish/Nornir based project [Network Importer](https://github.com/networktocode/network-importer/). The Network Importer project leverages multiple components to get a full set of details to import into Nautobot.
+
 ## Nautobot
 
 Nautobot is a fork from Nautobot 2.10 to take the capabilities even further in the network automation space. Take a look at the info on the [NTC home page](https://www.networktocode.com/nautobot/). The same features that have been part of Nautobot are still around and will evolve. If you want to take a test drive of Nautobot, take a look at [https://demo.nautobot.com](https://demo.nautobot.com).
@@ -35,14 +39,22 @@ look at the Makefile for the exact commands that replace the specific make comma
 ## How to
 
 1. Setup Nautobot (see the beginning)
-2. Setup a new file named .env that contains information about your Nautobot environment for the container. See below for example config
-3. Update your `group_vars/all.yml`,  `group_vars/` and `host_vars/` accordingly with credentials to connect to the devices, see below for example config
-4. Create a container - `make build`
-5. Enter the container - `make cli`
-6. Setup Nautobot with executing `ansible-playbook 00_setup_nautobot_devices.yml`
-7. Setup Devices Into Netbox `ansible-playbook 01_setup_devices.yml -i start_inventory` replace `start_inventory` with whatever your static inventory file is
-8. Setup Interfaces using dynamic inventory `ansible-playbook 02_setup_interfaces.yml -i nautobot_inventory.yml`
-9. Run the audit `ansible-playbook 03_audit_nautobot.yml -i nautobot_inventory.yml` where you have updated the information in the nautobot_inventory.yml file
+2. Copy `.env.example` to `.env`
+```
+cp .env.example .env
+```
+3. Update the `.env` file to match your environment
+| Variable | Value |
+| -------- | ----- |
+| NAUTOBOT_URL | The https://nautobot.example.com url, include any port numbers if not using default port numbers. |
+| NAUTOBOT_TOKEN | The API token to communicate with Nautobot |
+4. Update your `group_vars/all.yml`,  `group_vars/` and `host_vars/` accordingly with credentials to connect to the devices, see below for example config
+5. Create a container - `make build`
+6. Enter the container - `make cli`
+7. Setup Nautobot with executing `ansible-playbook 00_setup_nautobot_devices.yml`
+8. Setup Devices Into Nautobot `ansible-playbook 01_setup_devices.yml -i start_inventory` replace `start_inventory` with whatever your static inventory file is
+9. Setup Interfaces using dynamic inventory `ansible-playbook 02_setup_interfaces.yml -i nautobot_inventory.yml`
+19. Run the audit `ansible-playbook 03_audit_nautobot.yml -i nautobot_inventory.yml` where you have updated the information in the nautobot_inventory.yml file
 
 
 ### ENV File setup
