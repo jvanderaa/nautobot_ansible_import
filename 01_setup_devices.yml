@@ -1,5 +1,5 @@
 ---
-Playbook to setup devices from a static inventory list
+# Playbook to setup devices from a static inventory list
 - name: "PLAY 1: SETUP vEOS"
   connection: network_cli
   hosts: eos
