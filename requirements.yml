@@ -1,6 +1,10 @@
 ---
 collections:
   - name: networktocode.nautobot
+  - name: community.general
+  - name: cisco.ios
+  - name: cisco.nxos
+  - name: arista.eos
 
 roles:
   - name: ansible-network.network-engine
