@@ -8,7 +8,7 @@ This is only a start of the full importing process. It handles information based
 
 ## Nautobot
 
-Nautobot is a fork from Nautobot 2.10 to take the capabilities even further in the network automation space. Take a look at the info on the [NTC home page](https://www.networktocode.com/nautobot/). The same features that have been part of Nautobot are still around and will evolve. If you want to take a test drive of Nautobot, take a look at [https://demo.nautobot.com](https://demo.nautobot.com).
+Nautobot is a fork from NetBox 2.10.4 to take the capabilities even further in the network automation space. Take a look at the info on the [NTC home page](https://www.networktocode.com/nautobot/). The same features that have been part of Nautobot are still around and will evolve. If you want to take a test drive of Nautobot, take a look at [https://demo.nautobot.com](https://demo.nautobot.com).
 
 ## Most Recent Updates
 
