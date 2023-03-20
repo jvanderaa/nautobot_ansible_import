@@ -2,29 +2,27 @@
 - name: "PLAY 1: CLEANUP NETWORK DEVICES"
   connection: local
   hosts: platforms_nxos, platforms_ios, platforms_eos
-  tags: [ ios, nxos ]
+  tags: [ios, nxos]
   tasks:
     - name: "TASK 1: NAUTOBOT >> REMOVE DEVICE TO NAUTOBOT"
       networktocode.nautobot.device:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
-        data:
-          name: "{{ inventory_hostname }}"
+        name: "{{ inventory_hostname }}"
         state: absent
 
     - name: "TASK 2: DELETE SW1:2 DEVICE TO NAUTOBOT"
       networktocode.nautobot.device:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
-        data:
-          name: "sw-1:2"
-          device_type: "IOSv"
-          platform: IOS
-          serial: "ANSIBLE_FTW"
-          rack: MN_01
-          status: Active
-          device_role: "Switch"
-          site: "MINNESOTA01"
+        name: "sw-1:2"
+        device_type: "IOSv"
+        platform: IOS
+        serial: "ANSIBLE_FTW"
+        rack: MN_01
+        status: Active
+        device_role: "Switch"
+        site: "MINNESOTA01"
         state: absent
       delegate_to: localhost
       run_once: yes
@@ -52,9 +50,8 @@
       networktocode.nautobot.virtual_machine:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
-        data:
-          name: "{{ item.name }}"
-          cluster: JoshV_Cluster1
+        name: "{{ item.name }}"
+        cluster: JoshV_Cluster1
         state: absent
       loop: "{{ vms }}"
 
@@ -62,11 +59,10 @@
       networktocode.nautobot.device:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
-        data:
-          name: "{{ item.name }}"
-          device_type: CustomServer
-          device_role: Server
-          site: minnesota01
+        name: "{{ item.name }}"
+        device_type: CustomServer
+        device_role: Server
+        site: minnesota01
         state: absent
       loop: "{{ pves }}"
 
@@ -74,17 +70,15 @@
       networktocode.nautobot.cluster:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
-        data:
-          name: JoshV_Cluster1
-          cluster_type: Proxmox
+        name: JoshV_Cluster1
+        cluster_type: Proxmox
         state: absent
 
     - name: "TASK 4: DELETE CLUSTER TYPE"
       networktocode.nautobot.cluster_type:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
-        data:
-          name: Proxmox
+        name: Proxmox
         state: absent
 
 - name: "PLAY 3: CLEANUP BASE NAUTOBOT"
@@ -97,44 +91,40 @@
       networktocode.nautobot.circuit:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
-        data:
-          cid: my-circuit-id
+        cid: my-circuit-id
         state: "{{ install_state }}"
 
     - name: "TASK 2: DELETE CIRCUIT TYPE"
       networktocode.nautobot.circuit_type:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
-        data:
-          name: Cable
+        name: Cable
         state: "{{ install_state }}"
-      tags: [ circuit ]
+      tags: [circuit]
 
     - name: "TASK 3: DELETE CIRCUIT PROVIDER"
       networktocode.nautobot.provider:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
-        data:
-          name: Charter Spectrum
-          asn: 7843
-          account: AGOODPAYING_ONE
-          portal_url: http://spectrum.net
-          noc_contact: noc@spectrum.net
-          comments: "BEST I CAN GET"
+        name: Charter Spectrum
+        asn: 7843
+        account: AGOODPAYING_ONE
+        portal_url: http://spectrum.net
+        noc_contact: noc@spectrum.net
+        comments: "BEST I CAN GET"
         state: "{{ install_state }}"
-      tags: [ circuit ]
+      tags: [circuit]
 
     - name: "TASK 4: DELETE PREFIXES"
       networktocode.nautobot.prefix:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
-        data:
-          family: 4
-          prefix: "{{ item.prefix }}"
-          site: "MINNESOTA01"
-          status: Active
-          description: "{{ item.desc }}"
-          is_pool: "{{ item.ispool }}"
+        family: 4
+        prefix: "{{ item.prefix }}"
+        site: "MINNESOTA01"
+        status: Active
+        description: "{{ item.desc }}"
+        is_pool: "{{ item.ispool }}"
         state: "{{ install_state }}"
       loop:
         - { prefix: 10.50.50.0/24, desc: GNS3 Loopbacks, ispool: true }
@@ -142,46 +132,43 @@
         - { prefix: 172.31.1.0/24, desc: GNS3 - DC Mgmt, ispool: false }
         - { prefix: 192.168.0.0/24, desc: GNS3 Remote, ispool: false }
         - { prefix: 192.0.2.0/24, desc: Example Network, ispool: true }
-      tags: [ ipam ]
+      tags: [ipam]
 
     - name: "TASK 5: DELETE AGGREGRATES"
       networktocode.nautobot.aggregate:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
-        data:
-          prefix: "{{ item.name }}"
-          description: "{{ item.desc }}"
-          rir: RFC1918
+        prefix: "{{ item.name }}"
+        description: "{{ item.desc }}"
+        rir: RFC1918
         state: "{{ install_state }}"
       loop:
         - { name: "10.0.0.0/8", desc: RFC1918 - 10 }
         - { name: "172.16.0.0/12", desc: RFC1918 - 172 }
         - { name: "192.0.2.0/24", desc: RFC5735 - 192.0.2.0 }
         - { name: "192.168.0.0/16", desc: RFC1918 - 192 }
-      tags: [ ipam ]
+      tags: [ipam]
 
     - name: "TASK 6: DELETE RFC1918 RIR"
       networktocode.nautobot.rir:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
-        data:
-          name: RFC1918
-          is_private: True
+        name: RFC1918
+        is_private: True
         state: "{{ install_state }}"
-      tags: [ ipam ]
+      tags: [ipam]
 
     - name: "TASK 7: DELETE VLANS"
       networktocode.nautobot.vlan:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
-        data:
-          name: "VLAN{{ item.vid }}"
-          vid: "{{ item.vid }}"
-          site: "MINNESOTA01"
-          description: "{{ item.desc }}"
+        name: "VLAN{{ item.vid }}"
+        vid: "{{ item.vid }}"
+        site: "MINNESOTA01"
+        description: "{{ item.desc }}"
         state: "{{ install_state }}"
       register: result
-      tags: [ ipam ]
+      tags: [ipam]
       loop:
         - { vid: 100, desc: Demo VLAN }
         - { vid: 200, desc: Primary VLAN }
@@ -191,10 +178,9 @@
       networktocode.nautobot.device_role:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
-        data:
-          name: "{{ item.name }}"
-          color: "{{ item.color }}"
-          vm_role: "{{ item.vmrole }}"
+        name: "{{ item.name }}"
+        color: "{{ item.color }}"
+        vm_role: "{{ item.vmrole }}"
         state: "{{ install_state }}"
       loop:
         - { name: Firewall, color: FF0000, vmrole: true }
@@ -204,15 +190,14 @@
         - { name: VM, color: 00FFFF, vmrole: true }
         - { name: Leaf, color: 008000, vmrole: false }
         - { name: Spine, color: 0000FF, vmrole: false }
-      tags: [ devices ]
+      tags: [devices]
 
     - name: "TASK 9: DELETE PLATFORMS"
       networktocode.nautobot.platform:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
-        data:
-          name: "{{ item.name }}"
-          slug: "{{ item.slug }}"
+        name: "{{ item.name }}"
+        slug: "{{ item.slug }}"
         state: "{{ install_state }}"
       loop:
         - { name: EOS, slug: eos }
@@ -226,65 +211,103 @@
         - { name: Windows 2012, slug: win2012 }
         - { name: Windows 2016, slug: win2016 }
         - { name: Windows 2019, slug: win2019 }
-      tags: [ devices ]
+      tags: [devices]
 
     - name: "TASK 10: DELETE DEVICE TYPES"
       networktocode.nautobot.device_type:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
-        data:
-          model: "{{ item.model }}"
-          manufacturer: "{{ item.manufacturer }}"
-          slug: "{{ item.slug }}"
-          part_number: "{{ item.part_number }}"
-          u_height: 1
-          is_full_depth: "{{ item.full_depth }}"
+        model: "{{ item.model }}"
+        manufacturer: "{{ item.manufacturer }}"
+        slug: "{{ item.slug }}"
+        part_number: "{{ item.part_number }}"
+        u_height: 1
+        is_full_depth: "{{ item.full_depth }}"
         state: "{{ install_state }}"
       loop:
-        - {"model": "IOSv", "manufacturer": "Cisco", "slug": "iosv", "part_number": "iosv", "full_depth": False}
-        - {"model": "nxosv", "manufacturer": "Cisco", "slug": "nxosv", "part_number": "nxosv", "full_depth": False}
-        - {"model": "nx-osv-chassis-nx-osv-supervisor-module", "manufacturer": "Cisco", "slug": "nx-osv-chassis-nx-osv-supervisor-module", "part_number": "nx-osv-chassis-nx-osv-supervisor-module", "full_depth": False}
-        - {"model": "CSR1000v", "manufacturer": "Cisco", "slug": "csr1000v", "part_number": "csr1000v", "full_depth": False}
-        - {"model": "ASAv", "manufacturer": "Cisco", "slug": "asav", "part_number": "asav", "full_depth": False}
-        - {"model": "CustomServer", "manufacturer": "CustomBuild", "slug": "customserver", "part_number": "home", "full_depth": True}
-        - {"model": "vEOS", "manufacturer": "Arista", "slug": "veos", "part_number": "veos", "full_depth": False}
-      tags: [ devices ]
+        - {
+            "model": "IOSv",
+            "manufacturer": "Cisco",
+            "slug": "iosv",
+            "part_number": "iosv",
+            "full_depth": False,
+          }
+        - {
+            "model": "nxosv",
+            "manufacturer": "Cisco",
+            "slug": "nxosv",
+            "part_number": "nxosv",
+            "full_depth": False,
+          }
+        - {
+            "model": "nx-osv-chassis-nx-osv-supervisor-module",
+            "manufacturer": "Cisco",
+            "slug": "nx-osv-chassis-nx-osv-supervisor-module",
+            "part_number": "nx-osv-chassis-nx-osv-supervisor-module",
+            "full_depth": False,
+          }
+        - {
+            "model": "CSR1000v",
+            "manufacturer": "Cisco",
+            "slug": "csr1000v",
+            "part_number": "csr1000v",
+            "full_depth": False,
+          }
+        - {
+            "model": "ASAv",
+            "manufacturer": "Cisco",
+            "slug": "asav",
+            "part_number": "asav",
+            "full_depth": False,
+          }
+        - {
+            "model": "CustomServer",
+            "manufacturer": "CustomBuild",
+            "slug": "customserver",
+            "part_number": "home",
+            "full_depth": True,
+          }
+        - {
+            "model": "vEOS",
+            "manufacturer": "Arista",
+            "slug": "veos",
+            "part_number": "veos",
+            "full_depth": False,
+          }
+      tags: [devices]
 
     - name: "TASK 11: DELETE MANUFACTURERS"
       networktocode.nautobot.manufacturer:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
-        data:
-          name: "{{ item }}"
+        name: "{{ item }}"
         state: "{{ install_state }}"
       loop:
         - Arista
         - Cisco
         - CustomBuild
         - Raspberry Pi
-      tags: [ devices ]
+      tags: [devices]
 
     - name: "TASK 12: DELETE RACKS"
       networktocode.nautobot.rack:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
-        data:
-          name: "MN_01"
-          site: "MINNESOTA01"
+        name: "MN_01"
+        site: "MINNESOTA01"
         state: "{{ install_state }}"
-      tags: [ sites, devices ]
+      tags: [sites, devices]
 
     - name: "TASK 13: DELETE SITES"
       networktocode.nautobot.site:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
-        data:
-          name: "MINNESOTA01"
-          time_zone: America/Chicago
-          status: active
-          description: Josh's Home
-          contact_name: Josh V
-          contact_email: josh@josh-v.com
+        name: "MINNESOTA01"
+        time_zone: America/Chicago
+        status: active
+        description: Josh's Home
+        contact_name: Josh V
+        contact_email: josh@josh-v.com
         state: "{{ install_state }}"
       register: site_setup
-      tags: [ sites, devices ]
+      tags: [sites, devices]
