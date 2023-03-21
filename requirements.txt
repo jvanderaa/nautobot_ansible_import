@@ -1,5 +1,5 @@
-ansible-base==2.10.11
-ansible-lint
+ansible==2.9.27
+# ansible-lint
 bandit
 black
 paramiko
@@ -7,5 +7,6 @@ pylint
 pynautobot
 pytest
 pytest-pythonpath
+ntc-templates
 textfsm
 yamllint

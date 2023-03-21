@@ -220,9 +220,7 @@ class FilterModule:
         Args:
             vm_name (string): Name of the VM
         """
-        url = (
-            f"{nautobot_url}/api/virtualization/interfaces/?virtual_machine={vm_name}"
-        )
+        url = f"{nautobot_url}/api/virtualization/interfaces/?virtual_machine={vm_name}"
         result = requests.get(url, headers=nautobot_headers)
         return result.json()["results"][0]["id"]
 

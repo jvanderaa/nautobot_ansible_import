@@ -225,55 +225,41 @@
         is_full_depth: "{{ item.full_depth }}"
         state: "{{ install_state }}"
       loop:
-        - {
-            "model": "IOSv",
-            "manufacturer": "Cisco",
-            "slug": "iosv",
-            "part_number": "iosv",
-            "full_depth": False,
-          }
-        - {
-            "model": "nxosv",
-            "manufacturer": "Cisco",
-            "slug": "nxosv",
-            "part_number": "nxosv",
-            "full_depth": False,
-          }
-        - {
-            "model": "nx-osv-chassis-nx-osv-supervisor-module",
-            "manufacturer": "Cisco",
-            "slug": "nx-osv-chassis-nx-osv-supervisor-module",
-            "part_number": "nx-osv-chassis-nx-osv-supervisor-module",
-            "full_depth": False,
-          }
-        - {
-            "model": "CSR1000v",
-            "manufacturer": "Cisco",
-            "slug": "csr1000v",
-            "part_number": "csr1000v",
-            "full_depth": False,
-          }
-        - {
-            "model": "ASAv",
-            "manufacturer": "Cisco",
-            "slug": "asav",
-            "part_number": "asav",
-            "full_depth": False,
-          }
-        - {
-            "model": "CustomServer",
-            "manufacturer": "CustomBuild",
-            "slug": "customserver",
-            "part_number": "home",
-            "full_depth": True,
-          }
-        - {
-            "model": "vEOS",
-            "manufacturer": "Arista",
-            "slug": "veos",
-            "part_number": "veos",
-            "full_depth": False,
-          }
+        - model: "IOSv"
+          manufacturer: "Cisco"
+          slug: "iosv"
+          part_number: "iosv"
+          full_depth: False
+        - model: "nxosv"
+          manufacturer: "Cisco"
+          slug: "nxosv"
+          part_number: "nxosv"
+          full_depth: False
+        - model: "nx-osv-chassis-nx-osv-supervisor-module"
+          manufacturer: "Cisco"
+          slug: "nx-osv-chassis-nx-osv-supervisor-module"
+          part_number: "nx-osv-chassis-nx-osv-supervisor-module"
+          full_depth: False
+        - model: "CSR1000v"
+          manufacturer: "Cisco"
+          slug: "csr1000v"
+          part_number: "csr1000v"
+          full_depth: False
+        - model: "ASAv"
+          manufacturer: "Cisco"
+          slug: "asav"
+          part_number: "asav"
+          full_depth: False
+        - model: "CustomServer"
+          manufacturer: "CustomBuild"
+          slug: "customserver"
+          part_number: "home"
+          full_depth: True
+        - model: "vEOS"
+          manufacturer: "Arista"
+          slug: "veos"
+          part_number: "veos"
+          full_depth: False
       tags: [devices]
 
     - name: "TASK 11: DELETE MANUFACTURERS"

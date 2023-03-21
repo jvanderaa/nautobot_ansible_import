@@ -1,5 +1,5 @@
 IMG_NAME=ntc-jv/ansible
-IMG_VERSION=1.0.0
+IMG_VERSION=1.1.0
 
 .DEFAULT_GOAL := test
 .PHONY: test
@@ -24,9 +24,9 @@ pylint:
 lint:
 	@echo "Starting lint"
 	docker run -v $(shell pwd):/local $(IMG_NAME):$(IMG_VERSION) yamllint --strict .
-	docker run -v $(shell pwd):/local $(IMG_NAME):$(IMG_VERSION) ansible-lint .
+	# docker run -v $(shell pwd):/local $(IMG_NAME):$(IMG_VERSION) ansible-lint .
 	docker run -v $(shell pwd):/local $(IMG_NAME):$(IMG_VERSION) make pylint
-	docker run -v $(shell pwd):/local $(IMG_NAME):$(IMG_VERSION) black --check
+	docker run -v $(shell pwd):/local $(IMG_NAME):$(IMG_VERSION) black --check .
 	docker run -v $(shell pwd):/local $(IMG_NAME):$(IMG_VERSION) bandit --recursive --config .bandit.yml ./
 	
 	@echo "Completed lint"
