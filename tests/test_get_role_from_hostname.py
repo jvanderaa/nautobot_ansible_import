@@ -13,7 +13,7 @@ def test_get_role_from_hostname():
         "rtr": "Router",
         "fw": "Firewall",
         "nxos": "Switch",
-        "veos": "Switch"
+        "veos": "Switch",
     }
     for text_in_name, device_role in device_test_mapping.items():
         assert FilterModule.get_role_from_hostname(text_in_name) == device_role  # nosec
@@ -23,7 +23,7 @@ def test_get_role_from_hostname():
         "rtr-1": "Router",
         "14-fw1": "Firewall",
         "dc01-nxos-02": "Switch",
-        "dc04-veos-14": "Switch"
+        "dc04-veos-14": "Switch",
     }
 
     for text_in_name, device_role in device_name_mapping.items():

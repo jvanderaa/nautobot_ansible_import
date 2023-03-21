@@ -15,29 +15,27 @@
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         validate_certs: "{{ ssl_verify }}"
-        data:
-          name: "{{ inventory_hostname }}"
-          device_type: "{{ ansible_facts['net_model'] }}"
-          platform: EOS
-          serial: "{{ ansible_facts['net_serialnum'] }}"
-          rack: MN_01
-          position: "{{ rack_location }}"
-          face: "Front"
-          status: Active
-          device_role: "Leaf"
-          site: "MINNESOTA01"
-          custom_fields:
-            code_version: "{{ ansible_facts['net_version'] }}"
+        name: "{{ inventory_hostname }}"
+        device_type: "{{ ansible_facts['net_model'] }}"
+        platform: EOS
+        serial: "{{ ansible_facts['net_serialnum'] }}"
+        rack: MN_01
+        position: "{{ rack_location }}"
+        face: "Front"
+        status: Active
+        device_role: "Leaf"
+        site: "MINNESOTA01"
+        custom_fields:
+          code_version: "{{ ansible_facts['net_version'] }}"
 
     - name: "TASK 3: NAUTOBOT >> Add temporary interface"
       networktocode.nautobot.device_interface:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         validate_certs: "{{ ssl_verify }}"
-        data:
-          device: "{{ inventory_hostname }}"
-          name: Temporary_Interface
-          type: Virtual
+        device: "{{ inventory_hostname }}"
+        name: Temporary_Interface
+        type: Virtual
         state: present
 
     - name: "TASK 4: NAUTOBOT >> ADD IP ADDRESS OF ANSIBLE HOST"
@@ -45,29 +43,27 @@
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         validate_certs: "{{ ssl_verify }}"
-        data:
-          family: 4
-          address: "{{ ansible_host }}/24"
-          status: active
-          assigned_object:
-            name: Temporary_Interface
-            device: "{{ inventory_hostname }}"
+        family: 4
+        address: "{{ ansible_host }}/24"
+        status: active
+        assigned_object:
+          name: Temporary_Interface
+          device: "{{ inventory_hostname }}"
 
     - name: "TASK 5: NAUTOBOT >> ADD DEVICE TO NAUTOBOT"
       networktocode.nautobot.device:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         validate_certs: "{{ ssl_verify }}"
-        data:
-          name: "{{ inventory_hostname }}"
-          device_type: "{{ ansible_facts['net_model'] }}"
-          platform: EOS
-          serial: "{{ ansible_facts['net_serialnum'] }}"
-          rack: MN_01
-          face: "Front"
-          status: Active
-          site: "MINNESOTA01"
-          primary_ip4: "{{ ansible_host }}/24"
+        name: "{{ inventory_hostname }}"
+        device_type: "{{ ansible_facts['net_model'] }}"
+        platform: EOS
+        serial: "{{ ansible_facts['net_serialnum'] }}"
+        rack: MN_01
+        face: "Front"
+        status: Active
+        site: "MINNESOTA01"
+        primary_ip4: "{{ ansible_host }}/24"
 
 - name: "PLAY 2: ADD IOS"
   connection: network_cli
@@ -84,28 +80,26 @@
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         validate_certs: "{{ ssl_verify }}"
-        data:
-          name: "{{ inventory_hostname }}"
-          device_type: "{{ ansible_facts['net_model'] }}"
-          platform: IOS
-          serial: "{{ ansible_facts['net_serialnum'] }}"
-          rack: MN_01
-          face: "Front"
-          status: Active
-          device_role: "{{ inventory_hostname | get_role_from_hostname }}"
-          site: "MINNESOTA01"
-          # custom_fields:
-          #   code_version: "{{ ansible_facts['net_version'] }}"
+        name: "{{ inventory_hostname }}"
+        device_type: "{{ ansible_facts['net_model'] }}"
+        platform: IOS
+        serial: "{{ ansible_facts['net_serialnum'] }}"
+        rack: MN_01
+        face: "Front"
+        status: Active
+        device_role: "{{ inventory_hostname | get_role_from_hostname }}"
+        site: "MINNESOTA01"
+        # custom_fields:
+        #   code_version: "{{ ansible_facts['net_version'] }}"
 
     - name: "TASK 3: Add temporary interface"
       networktocode.nautobot.device_interface:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         validate_certs: "{{ ssl_verify }}"
-        data:
-          device: "{{ inventory_hostname }}"
-          name: Temporary_Interface
-          type: Virtual
+        device: "{{ inventory_hostname }}"
+        name: Temporary_Interface
+        type: Virtual
         state: present
 
     # TODO: Add a module to lookup inventory hostname if using only hostnames
@@ -115,34 +109,32 @@
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         validate_certs: "{{ ssl_verify }}"
-        data:
-          address: "{{ ansible_host }}/24"
-          status: active
-          assigned_object:
-            name: Temporary_Interface
-            device: "{{ inventory_hostname }}"
+        address: "{{ ansible_host }}/24"
+        status: active
+        assigned_object:
+          name: Temporary_Interface
+          device: "{{ inventory_hostname }}"
 
     - name: "TASK 5: ADD DEVICE TO NAUTOBOT"
       networktocode.nautobot.device:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         validate_certs: "{{ ssl_verify }}"
-        data:
-          name: "{{ inventory_hostname }}"
-          device_type: "{{ ansible_facts['net_model'] }}"
-          platform: IOS
-          serial: "{{ ansible_facts['net_serialnum'] }}"
-          rack: MN_01
-          face: "Front"
-          status: Active
-          device_role: "{{ inventory_hostname | get_role_from_hostname }}"
-          site: "MINNESOTA01"
-          primary_ip4: "{{ ansible_host }}/24"
+        name: "{{ inventory_hostname }}"
+        device_type: "{{ ansible_facts['net_model'] }}"
+        platform: IOS
+        serial: "{{ ansible_facts['net_serialnum'] }}"
+        rack: MN_01
+        face: "Front"
+        status: Active
+        device_role: "{{ inventory_hostname | get_role_from_hostname }}"
+        site: "MINNESOTA01"
+        primary_ip4: "{{ ansible_host }}/24"
 
 - name: "PLAY 3: ADD NXOS"
   connection: network_cli
   hosts: nxos
-  tags: [ nxos ]
+  tags: [nxos]
   vars:
     ssl_verify: True
   tasks:
@@ -155,28 +147,26 @@
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         validate_certs: "{{ ssl_verify }}"
-        data:
-          name: "{{ inventory_hostname }}"
-          device_type: "{{ ansible_facts['net_model'] }}"
-          platform: NXOS
-          serial: "{{ ansible_facts['net_serialnum'] }}"
-          rack: MN_01
-          face: "Front"
-          status: Active
-          device_role: "{{ inventory_hostname | get_role_from_hostname }}"
-          site: "MINNESOTA01"
-          custom_fields:
-            code_version: "{{ ansible_facts['net_version'] }}"
+        name: "{{ inventory_hostname }}"
+        device_type: "{{ ansible_facts['net_model'] }}"
+        platform: NXOS
+        serial: "{{ ansible_facts['net_serialnum'] }}"
+        rack: MN_01
+        face: "Front"
+        status: Active
+        device_role: "{{ inventory_hostname | get_role_from_hostname }}"
+        site: "MINNESOTA01"
+        custom_fields:
+          code_version: "{{ ansible_facts['net_version'] }}"
 
     - name: "TASK 3: Add temporary interface"
       networktocode.nautobot.device_interface:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         validate_certs: "{{ ssl_verify }}"
-        data:
-          device: "{{ inventory_hostname }}"
-          name: Temporary_Interface
-          type: Virtual
+        device: "{{ inventory_hostname }}"
+        name: Temporary_Interface
+        type: Virtual
         state: present
 
     - name: "TASK 4: ADD IP ADDRESS OF ANSIBLE HOST"
@@ -184,50 +174,46 @@
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         validate_certs: "{{ ssl_verify }}"
-        data:
-          family: 4
-          address: "{{ ansible_host }}/24"
-          status: active
-          assigned_object:
-            name: Temporary_Interface
-            device: "{{ inventory_hostname }}"
+        family: 4
+        address: "{{ ansible_host }}/24"
+        status: active
+        assigned_object:
+          name: Temporary_Interface
+          device: "{{ inventory_hostname }}"
 
     - name: "TASK 5: ADD DEVICE TO NAUTOBOT"
       networktocode.nautobot.device:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         validate_certs: "{{ ssl_verify }}"
-        data:
-          name: "{{ inventory_hostname }}"
-          device_type: "{{ ansible_facts['net_model'] }}"
-          platform: NXOS
-          serial: "{{ ansible_facts['net_serialnum'] }}"
-          rack: MN_01
-          face: "Front"
-          status: Active
-          device_role: "{{ inventory_hostname | get_role_from_hostname }}"
-          site: "MINNESOTA01"
-          primary_ip4: "{{ ansible_host }}/24"
+        name: "{{ inventory_hostname }}"
+        device_type: "{{ ansible_facts['net_model'] }}"
+        platform: NXOS
+        serial: "{{ ansible_facts['net_serialnum'] }}"
+        rack: MN_01
+        face: "Front"
+        status: Active
+        device_role: "{{ inventory_hostname | get_role_from_hostname }}"
+        site: "MINNESOTA01"
+        primary_ip4: "{{ ansible_host }}/24"
 
 - name: "PLAY 4: Add BLANK NODE"
   connection: local
   hosts: localhost
-  tags: [ setup_demo ]
+  tags: [setup_demo]
   vars:
     ssl_verify: True
   tasks:
-
     - name: "TASK 1: ADD DEVICE TO NAUTOBOT"
       networktocode.nautobot.device:
         url: "{{ lookup('env', 'NAUTOBOT_URL') }}"
         token: "{{ lookup('env', 'NAUTOBOT_TOKEN') }}"
         validate_certs: "{{ ssl_verify }}"
-        data:
-          name: "sw-1:2"
-          device_type: "IOSv"
-          platform: IOS
-          serial: "ANSIBLE_FTW"
-          rack: MN_01
-          status: Active
-          device_role: "Switch"
-          site: "MINNESOTA01"
+        name: "sw-1:2"
+        device_type: "IOSv"
+        platform: IOS
+        serial: "ANSIBLE_FTW"
+        rack: MN_01
+        status: Active
+        device_role: "Switch"
+        site: "MINNESOTA01"
